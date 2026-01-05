@@ -2,7 +2,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* 背景オーバーレイ */}
       <div 
         className="absolute inset-0 bg-black opacity-50"
@@ -10,9 +10,9 @@ const Modal = ({ isOpen, onClose, title, children }) => {
       ></div>
       
       {/* モーダル本体 */}
-      <div className="relative bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+      <div className="relative bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] flex flex-col">
         {/* ヘッダー */}
-        <div className="flex justify-between items-center p-4 border-b">
+        <div className="flex justify-between items-center p-4 border-b flex-shrink-0">
           <h3 className="text-lg font-semibold">{title}</h3>
           <button 
             onClick={onClose}
@@ -23,7 +23,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
         </div>
         
         {/* コンテンツ */}
-        <div className="p-4">
+        <div className="p-4 overflow-y-auto">
           {children}
         </div>
       </div>
