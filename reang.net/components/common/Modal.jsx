@@ -28,7 +28,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
         </div>
         
         {/* コンテンツ */}
-        <div className="p-4 overflow-y-auto overscroll-contain">
+        <div className="p-4 overflow-y-auto overflow-x-hidden overscroll-contain">
           {children}
         </div>
       </div>
