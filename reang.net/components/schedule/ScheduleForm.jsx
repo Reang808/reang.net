@@ -85,7 +85,8 @@ const ScheduleForm = ({ onSubmit, onCancel, onDelete, initialData = null, isEdit
           value={formData.date}
           onChange={handleChange}
           required
-          className="w-full min-w-0 border border-gray-300 rounded-lg px-3 py-2.5 sm:py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full min-w-0 box-border border border-gray-300 rounded-lg px-3 py-2.5 sm:py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+          style={{ width: '100%' }}
         />
       </div>
 
@@ -113,7 +114,8 @@ const ScheduleForm = ({ onSubmit, onCancel, onDelete, initialData = null, isEdit
               name="start_time"
               value={formData.start_time}
               onChange={handleChange}
-              className="w-full min-w-0 border border-gray-300 rounded-lg px-3 py-2.5 sm:py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full min-w-0 box-border border border-gray-300 rounded-lg px-3 py-2.5 sm:py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+              style={{ width: '100%' }}
             />
           </div>
           <div className="min-w-0">
@@ -125,7 +127,8 @@ const ScheduleForm = ({ onSubmit, onCancel, onDelete, initialData = null, isEdit
               name="end_time"
               value={formData.end_time}
               onChange={handleChange}
-              className="w-full min-w-0 border border-gray-300 rounded-lg px-3 py-2.5 sm:py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full min-w-0 box-border border border-gray-300 rounded-lg px-3 py-2.5 sm:py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+              style={{ width: '100%' }}
             />
           </div>
         </div>
