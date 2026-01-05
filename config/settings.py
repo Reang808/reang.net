@@ -28,7 +28,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-%d+9#*=-5_bd%o9h(4h$=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['163.44.123.195', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['163.44.123.195', 'localhost', '127.0.0.1', 'reangnet.netlify.app']
 if os.environ.get('ALLOWED_HOSTS'):
     ALLOWED_HOSTS += os.environ.get('ALLOWED_HOSTS').split(',')
 
@@ -144,6 +144,7 @@ AUTH_USER_MODEL = 'accounts.User'
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "https://reangnet.netlify.app",
 ]
 
 # 本番環境のCORS設定（環境変数から追加）
@@ -153,6 +154,7 @@ if os.environ.get('CORS_ALLOWED_ORIGINS'):
 # CSRF設定
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
+    "https://reangnet.netlify.app",
 ]
 if os.environ.get('CSRF_TRUSTED_ORIGINS'):
     CSRF_TRUSTED_ORIGINS += os.environ.get('CSRF_TRUSTED_ORIGINS').split(',')
