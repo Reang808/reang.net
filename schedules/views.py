@@ -10,11 +10,10 @@ from tasks.serializers import TaskSerializer
 
 
 class ScheduleViewSet(viewsets.ModelViewSet):
-    queryset = Schedule.objects.all()
     serializer_class = ScheduleSerializer
 
     def get_queryset(self):
-        queryset = Schedule.objects.all()
+        queryset = Schedule.objects.filter(owner=self.request.user)
         
         start_date = self.request.query_params.get('start_date')
         end_date = self.request.query_params.get('end_date')
@@ -26,6 +25,10 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         
         return queryset
 
+    def perform_create(self, serializer):
+        """ スケジュール作成時に自動でownerをセット """
+        serializer.save(owner=self.request.user)
+
     @action(detail=False, methods=['get'], url_path='calendar')
     def calendar(self, request):
         """カレンダー表示用"""
@@ -36,12 +39,14 @@ class ScheduleViewSet(viewsets.ModelViewSet):
             return Response({'error': 'start_date and end_date are required'}, status=400)
         
         schedules = Schedule.objects.filter(
+            owner=self.request.user,
             date__gte=start_date,
             date__lte=end_date
         )
         schedule_data = ScheduleSerializer(schedules, many=True).data
         
         tasks = Task.objects.filter(
+            owner=self.request.user,
             due_date__gte=start_date,
             due_date__lte=end_date
         )
@@ -60,10 +65,16 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         if not date:
             return Response({'error': 'date is required'}, status=400)
         
-        schedules = Schedule.objects.filter(date=date).order_by('start_time')
+        schedules = Schedule.objects.filter(
+            owner=self.request.user,
+            date=date
+        ).order_by('start_time')
         schedule_data = ScheduleSerializer(schedules, many=True).data
         
-        tasks = Task.objects.filter(due_date=date)
+        tasks = Task.objects.filter(
+            owner=self.request.user,
+            due_date=date
+        )
         task_data = TaskSerializer(tasks, many=True).data
         
         return Response({

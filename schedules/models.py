@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 
 class Schedule(models.Model):
@@ -13,6 +14,12 @@ class Schedule(models.Model):
         ('gray', 'グレー'),
     ]
 
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='schedules',
+        verbose_name='所有者'
+    )
     title = models.CharField('タイトル', max_length=200)
     description = models.TextField('詳細', blank=True)
     date = models.DateField('日付')

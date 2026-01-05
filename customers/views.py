@@ -20,7 +20,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
         return CustomerDetailSerializer
 
     def get_queryset(self):
-        queryset = Customer.objects.all()
+        queryset = Customer.objects.filter(created_by=self.request.user)
         search = self.request.query_params.get('search', None)
         
         if search:
@@ -34,6 +34,10 @@ class CustomerViewSet(viewsets.ModelViewSet):
             )
         
         return queryset
+
+    def perform_create(self, serializer):
+        """ 顧客作成時に自動でcreated_byをセット """
+        serializer.save(created_by=self.request.user)
 
     @action(detail=True, methods=['post'], url_path='upload-business-card')
     def upload_business_card(self, request, pk=None):
@@ -59,7 +63,8 @@ class DocumentViewSet(viewsets.ModelViewSet):
     parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def get_queryset(self):
-        queryset = Document.objects.all()
+        # ログインユーザーの顧客に紐づく書類のみ
+        queryset = Document.objects.filter(customer__created_by=self.request.user)
         customer_id = self.request.query_params.get('customer', None)
         category = self.request.query_params.get('category', None)
         

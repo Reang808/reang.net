@@ -70,7 +70,7 @@ const ScheduleForm = ({ onSubmit, onCancel, onDelete, initialData = null, isEdit
           value={formData.title}
           onChange={handleChange}
           required
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 sm:py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
@@ -85,7 +85,7 @@ const ScheduleForm = ({ onSubmit, onCancel, onDelete, initialData = null, isEdit
           value={formData.date}
           onChange={handleChange}
           required
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 sm:py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
@@ -96,14 +96,14 @@ const ScheduleForm = ({ onSubmit, onCancel, onDelete, initialData = null, isEdit
           name="is_all_day"
           checked={formData.is_all_day}
           onChange={handleChange}
-          className="w-4 h-4 text-blue-600 rounded"
+          className="w-5 h-5 sm:w-4 sm:h-4 text-blue-600 rounded"
         />
         <label className="ml-2 text-sm text-gray-700">終日</label>
       </div>
 
       {/* 時間（終日でない場合） */}
       {!formData.is_all_day && (
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               開始時刻
@@ -113,7 +113,7 @@ const ScheduleForm = ({ onSubmit, onCancel, onDelete, initialData = null, isEdit
               name="start_time"
               value={formData.start_time}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2.5 sm:py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
@@ -125,7 +125,7 @@ const ScheduleForm = ({ onSubmit, onCancel, onDelete, initialData = null, isEdit
               name="end_time"
               value={formData.end_time}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2.5 sm:py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </div>
@@ -141,7 +141,7 @@ const ScheduleForm = ({ onSubmit, onCancel, onDelete, initialData = null, isEdit
           name="location"
           value={formData.location}
           onChange={handleChange}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 sm:py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
@@ -150,14 +150,14 @@ const ScheduleForm = ({ onSubmit, onCancel, onDelete, initialData = null, isEdit
         <label className="block text-sm font-medium text-gray-700 mb-1">
           色
         </label>
-        <div className="flex gap-2">
+        <div className="flex gap-2 sm:gap-2 flex-wrap">
           {colorOptions.map((color) => (
             <button
               key={color.value}
               type="button"
               onClick={() => setFormData((prev) => ({ ...prev, color: color.value }))}
-              className={`w-8 h-8 rounded-full ${color.class} ${
-                formData.color === color.value ? 'ring-2 ring-offset-2 ring-gray-400' : ''
+              className={`w-9 h-9 sm:w-8 sm:h-8 rounded-full ${color.class} transition-all ${
+                formData.color === color.value ? 'ring-2 ring-offset-2 ring-gray-400 scale-110' : ''
               }`}
               title={color.label}
             />
@@ -174,7 +174,7 @@ const ScheduleForm = ({ onSubmit, onCancel, onDelete, initialData = null, isEdit
           name="customer"
           value={formData.customer}
           onChange={handleChange}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 sm:py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="">選択なし</option>
           {customers.map((customer) => (
@@ -196,32 +196,32 @@ const ScheduleForm = ({ onSubmit, onCancel, onDelete, initialData = null, isEdit
           value={formData.description}
           onChange={handleChange}
           rows={3}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 sm:py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
       {/* ボタン */}
-      <div className={`flex pt-4 ${isEdit ? 'justify-between' : 'justify-end'}`}>
+      <div className={`pt-4 ${isEdit ? 'space-y-3 sm:space-y-0 sm:flex sm:justify-between' : ''}`}>
         {isEdit && (
           <button
             type="button"
             onClick={onDelete}
-            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            className="w-full sm:w-auto px-4 py-2.5 sm:py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 active:bg-red-800 transition-colors"
           >
             削除
           </button>
         )}
-        <div className="flex gap-3">
+        <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3">
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            className="w-full sm:w-auto px-4 py-2.5 sm:py-2 border border-gray-300 rounded-lg hover:bg-gray-50 active:bg-gray-100 transition-colors"
           >
             キャンセル
           </button>
           <button
             type="submit"
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="w-full sm:w-auto px-4 py-2.5 sm:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors"
           >
             {isEdit ? '更新' : '作成'}
           </button>

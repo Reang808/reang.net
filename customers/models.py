@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 import os
 
 def customer_directory_path(instance, filename):
@@ -12,6 +13,13 @@ def business_card_path(instance, filename):
 
 class Customer(models.Model):
     """顧客モデル"""
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='customers',
+        verbose_name='作成者'
+    )
+    
     # 基本情報
     company_name = models.CharField('会社名', max_length=200, blank=True)
     department = models.CharField('部署', max_length=100, blank=True)

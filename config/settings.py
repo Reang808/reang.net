@@ -23,12 +23,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-%d+9#*=-5_bd%o9h(4h$=wp6j^4^(lm$18-bcb3%ck-b=ex0we'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-%d+9#*=-5_bd%o9h(4h$=wp6j^4^(lm$18-bcb3%ck-b=ex0we')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['163.44.123.195', 'localhost', '127.0.0.1']
+if os.environ.get('ALLOWED_HOSTS'):
+    ALLOWED_HOSTS += os.environ.get('ALLOWED_HOSTS').split(',')
 
 
 # Application definition
@@ -41,10 +43,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders',
     'tasks',
     'customers',
     'schedules',
+    'accounts'
 ]
 
 MIDDLEWARE = [
@@ -83,8 +87,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DB_NAME', 'costmer_db'),
+        'USER': os.environ.get('DB_USER', 'costmer_user'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'costmer_password123'),
+        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
 
@@ -123,19 +131,38 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Custom User Model
+AUTH_USER_MODEL = 'accounts.User'
+
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5174",
+    "http://localhost:5173",
 ]
 
+# 本番環境のCORS設定（環境変数から追加）
+if os.environ.get('CORS_ALLOWED_ORIGINS'):
+    CORS_ALLOWED_ORIGINS += os.environ.get('CORS_ALLOWED_ORIGINS').split(',')
+
+# CSRF設定
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+]
+if os.environ.get('CSRF_TRUSTED_ORIGINS'):
+    CSRF_TRUSTED_ORIGINS += os.environ.get('CSRF_TRUSTED_ORIGINS').split(',')
+
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticated',
     ]
 }

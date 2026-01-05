@@ -1,5 +1,13 @@
 import { useState } from 'react'
 
+// ローカル日付でフォーマット（タイムゾーンずれ防止）
+const formatDateLocal = (date) => {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 const Calendar = ({ 
   currentDate, 
   schedules, 
@@ -39,14 +47,9 @@ const Calendar = ({
     weeks.push(days.slice(i, i + 7))
   }
 
-  // 日付をYYYY-MM-DD形式に変換
-  const formatDate = (date) => {
-    return date.toISOString().split('T')[0]
-  }
-
   // その日のスケジュールとタスクを取得
   const getItemsForDate = (date) => {
-    const dateStr = formatDate(date)
+    const dateStr = formatDateLocal(date)
     const daySchedules = schedules.filter(s => s.date === dateStr)
     const dayTasks = tasks.filter(t => t.due_date === dateStr)
     return { schedules: daySchedules, tasks: dayTasks }
@@ -69,7 +72,7 @@ const Calendar = ({
   // 今日かどうか
   const isToday = (date) => {
     const today = new Date()
-    return formatDate(date) === formatDate(today)
+    return formatDateLocal(date) === formatDateLocal(today)
   }
 
   // 今月かどうか
@@ -123,7 +126,7 @@ const Calendar = ({
 
             return (
               <div
-                key={formatDate(date)}
+                key={formatDateLocal(date)}
                 onClick={() => onDateClick(date)}
                 className={`min-h-24 border-b border-r p-1 cursor-pointer hover:bg-gray-50 transition-colors ${
                   !isCurrentMonth(date) ? 'bg-gray-50' : ''

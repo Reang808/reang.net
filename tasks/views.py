@@ -10,8 +10,15 @@ from .serializers import TaskSerializer
 
 
 class TaskViewSet(viewsets.ModelViewSet):
-    queryset = Task.objects.all()
     serializer_class = TaskSerializer
+
+    def get_queryset(self):
+        """ ログインユーザーのタスクのみ返す """
+        return Task.objects.filter(owner=self.request.user)
+
+    def perform_create(self, serializer):
+        """ タスク作成時に自動でownerをセット """
+        serializer.save(owner=self.request.user)
 
     def perform_update(self, serializer):
         instance = self.get_object()
@@ -35,6 +42,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         
         # 指定月のタスクを取得
         tasks = Task.objects.filter(
+            owner=self.request.user,
             created_at__year=year,
             created_at__month=month
         )
@@ -63,6 +71,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         monthly_data = []
         for month in range(1, 13):
             tasks = Task.objects.filter(
+                owner=self.request.user,
                 created_at__year=year,
                 created_at__month=month
             )
@@ -86,6 +95,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         """期限切れタスク"""
         today = timezone.now().date()
         overdue = Task.objects.filter(
+            owner=self.request.user,
             due_date__lt=today,
             status__in=['todo', 'in_progress']
         ).order_by('due_date')

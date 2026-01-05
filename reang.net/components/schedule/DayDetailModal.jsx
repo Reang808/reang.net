@@ -12,6 +12,11 @@ const DayDetailModal = ({
     return new Date(d).toLocaleDateString('ja-JP', options)
   }
 
+  const formatDateShort = (d) => {
+    const options = { month: 'short', day: 'numeric', weekday: 'short' }
+    return new Date(d).toLocaleDateString('ja-JP', options)
+  }
+
   const formatTime = (time) => {
     if (!time) return ''
     return time.slice(0, 5)
@@ -45,26 +50,29 @@ const DayDetailModal = ({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black opacity-50" onClick={onClose}></div>
-      <div className="relative bg-white rounded-lg shadow-xl w-full max-w-lg mx-4 max-h-[80vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-0">
+      <div className="absolute inset-0 bg-black/50" onClick={onClose}></div>
+      <div className="relative bg-white rounded-lg shadow-xl w-full max-w-lg mx-auto max-h-[90vh] sm:max-h-[80vh] overflow-hidden">
         {/* ヘッダー */}
-        <div className="flex justify-between items-center p-4 border-b bg-gray-50">
-          <h3 className="text-lg font-semibold">{formatDate(date)}</h3>
+        <div className="flex justify-between items-center p-3 sm:p-4 border-b bg-gray-50">
+          <h3 className="text-base sm:text-lg font-semibold">
+            <span className="hidden sm:inline">{formatDate(date)}</span>
+            <span className="sm:hidden">{formatDateShort(date)}</span>
+          </h3>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-xl"
+            className="text-gray-400 hover:text-gray-600 active:text-gray-800 text-xl p-1"
           >
             ✕
           </button>
         </div>
 
         {/* コンテンツ */}
-        <div className="p-4 overflow-y-auto max-h-[60vh]">
+        <div className="p-3 sm:p-4 overflow-y-auto max-h-[70vh] sm:max-h-[60vh]">
           {/* スケジュール追加ボタン */}
           <button
             onClick={onAddSchedule}
-            className="w-full mb-4 py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-blue-500 hover:text-blue-500 transition-colors"
+            className="w-full mb-4 py-2.5 sm:py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-blue-500 hover:text-blue-500 active:bg-blue-50 transition-colors text-sm sm:text-base"
           >
             + スケジュールを追加
           </button>
@@ -72,31 +80,31 @@ const DayDetailModal = ({
           {/* スケジュール一覧 */}
           {schedules.length > 0 && (
             <div className="mb-6">
-              <h4 className="text-sm font-medium text-gray-500 mb-2">📅 スケジュール</h4>
+              <h4 className="text-xs sm:text-sm font-medium text-gray-500 mb-2">📅 スケジュール</h4>
               <div className="space-y-2">
                 {schedules.map((schedule) => (
                   <div
                     key={schedule.id}
                     onClick={() => onScheduleClick(schedule)}
-                    className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
+                    className="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 active:bg-gray-200 transition-colors"
                   >
-                    <div className={`w-3 h-3 rounded-full mt-1.5 ${getColorClass(schedule.color)}`}></div>
-                    <div className="flex-1">
-                      <div className="font-medium">{schedule.title}</div>
+                    <div className={`w-3 h-3 rounded-full mt-1 sm:mt-1.5 flex-shrink-0 ${getColorClass(schedule.color)}`}></div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-sm sm:text-base truncate">{schedule.title}</div>
                       {!schedule.is_all_day && schedule.start_time && (
-                        <div className="text-sm text-gray-500">
+                        <div className="text-xs sm:text-sm text-gray-500">
                           {formatTime(schedule.start_time)}
                           {schedule.end_time && ` - ${formatTime(schedule.end_time)}`}
                         </div>
                       )}
                       {schedule.is_all_day && (
-                        <div className="text-sm text-gray-500">終日</div>
+                        <div className="text-xs sm:text-sm text-gray-500">終日</div>
                       )}
                       {schedule.location && (
-                        <div className="text-sm text-gray-500">📍 {schedule.location}</div>
+                        <div className="text-xs sm:text-sm text-gray-500 truncate">📍 {schedule.location}</div>
                       )}
                       {schedule.customer_name && (
-                        <div className="text-sm text-gray-500">👤 {schedule.customer_name}</div>
+                        <div className="text-xs sm:text-sm text-gray-500 truncate">👤 {schedule.customer_name}</div>
                       )}
                     </div>
                   </div>
@@ -108,12 +116,12 @@ const DayDetailModal = ({
           {/* タスク一覧 */}
           {tasks.length > 0 && (
             <div>
-              <h4 className="text-sm font-medium text-gray-500 mb-2">📋 タスク（期限）</h4>
+              <h4 className="text-xs sm:text-sm font-medium text-gray-500 mb-2">📋 タスク（期限）</h4>
               <div className="space-y-2">
                 {tasks.map((task) => (
                   <div
                     key={task.id}
-                    className={`flex items-center gap-3 p-3 rounded-lg ${
+                    className={`flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg ${
                       task.status === 'done' ? 'bg-gray-100' : 'bg-orange-50'
                     }`}
                   >
@@ -122,11 +130,11 @@ const DayDetailModal = ({
                       type="checkbox"
                       checked={task.status === 'done'}
                       onChange={() => onTaskComplete(task)}
-                      className="w-5 h-5 rounded border-gray-300 text-green-600 focus:ring-green-500 cursor-pointer"
+                      className="w-5 h-5 rounded border-gray-300 text-green-600 focus:ring-green-500 cursor-pointer flex-shrink-0"
                     />
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <div
-                        className={`font-medium ${
+                        className={`font-medium text-sm sm:text-base truncate ${
                           task.status === 'done' ? 'line-through text-gray-400' : ''
                         }`}
                       >
@@ -134,7 +142,7 @@ const DayDetailModal = ({
                       </div>
                       {task.description && (
                         <div
-                          className={`text-sm ${
+                          className={`text-xs sm:text-sm truncate ${
                             task.status === 'done' ? 'text-gray-400' : 'text-gray-500'
                           }`}
                         >
@@ -157,7 +165,7 @@ const DayDetailModal = ({
 
           {/* 何もない場合 */}
           {schedules.length === 0 && tasks.length === 0 && (
-            <p className="text-center text-gray-500 py-8">
+            <p className="text-center text-gray-500 py-6 sm:py-8 text-sm sm:text-base">
               この日の予定はありません
             </p>
           )}

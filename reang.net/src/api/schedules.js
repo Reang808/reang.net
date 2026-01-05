@@ -1,8 +1,29 @@
 import { API_BASE_URL } from './config'
 
+// トークンをローカルストレージから取得
+const getToken = () => localStorage.getItem('token')
+
+// 認証ヘッダー付きfetch
+const authFetch = async (url, options = {}) => {
+  const token = getToken()
+  const headers = {
+    'Content-Type': 'application/json',
+    ...options.headers,
+  }
+  
+  if (token) {
+    headers['Authorization'] = `Token ${token}`
+  }
+  
+  return fetch(url, {
+    ...options,
+    headers,
+  })
+}
+
 // カレンダーデータ取得（スケジュール + タスク）
 export const getCalendarData = async (startDate, endDate) => {
-  const response = await fetch(
+  const response = await authFetch(
     `${API_BASE_URL}/schedules/calendar/?start_date=${startDate}&end_date=${endDate}`
   )
   if (!response.ok) throw new Error('カレンダーデータの取得に失敗しました')
@@ -11,9 +32,8 @@ export const getCalendarData = async (startDate, endDate) => {
 
 // スケジュール作成
 export const createSchedule = async (schedule) => {
-  const response = await fetch(`${API_BASE_URL}/schedules/`, {
+  const response = await authFetch(`${API_BASE_URL}/schedules/`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(schedule),
   })
   if (!response.ok) throw new Error('スケジュールの作成に失敗しました')
@@ -22,9 +42,8 @@ export const createSchedule = async (schedule) => {
 
 // スケジュール更新
 export const updateSchedule = async (id, schedule) => {
-  const response = await fetch(`${API_BASE_URL}/schedules/${id}/`, {
+  const response = await authFetch(`${API_BASE_URL}/schedules/${id}/`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(schedule),
   })
   if (!response.ok) throw new Error('スケジュールの更新に失敗しました')
@@ -33,7 +52,7 @@ export const updateSchedule = async (id, schedule) => {
 
 // スケジュール削除
 export const deleteSchedule = async (id) => {
-  const response = await fetch(`${API_BASE_URL}/schedules/${id}/`, {
+  const response = await authFetch(`${API_BASE_URL}/schedules/${id}/`, {
     method: 'DELETE',
   })
   if (!response.ok) throw new Error('スケジュールの削除に失敗しました')

@@ -29,6 +29,7 @@ urlpatterns = [
     path('api/', include('tasks.urls')),
     path('api/', include('customers.urls')),
     path('api/', include('schedules.urls')),
+    path('api/accounts/', include('accounts.urls')),
     
 ]
 
