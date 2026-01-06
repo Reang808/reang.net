@@ -11,6 +11,7 @@ import Customers from '../pages/Customers'
 import CustomerDetail from '../pages/CustomerDetail'
 import Schedule from '../pages/Schedule'
 import Settings from '../pages/Settings'
+import Expenses from '../pages/Expenses'
 
 const AppLayout = ({ children }) => (
   <div className="flex min-h-screen">
@@ -99,6 +100,16 @@ function App() {
             <ProtectedRoute>
               <AppLayout>
                 <Settings />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/expenses/*"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <Expenses />
               </AppLayout>
             </ProtectedRoute>
           }

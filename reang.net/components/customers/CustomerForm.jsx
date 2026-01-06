@@ -24,7 +24,24 @@ const CustomerForm = ({ onSubmit, onCancel, initialData = null }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    onSubmit(formData)
+    
+    // websiteのURL形式を整える
+    let processedData = { ...formData }
+    if (processedData.website) {
+      let url = processedData.website.trim()
+      
+      // https:/ や http:/ （スラッシュ1つ）を修正
+      url = url.replace(/^https?:\/(?!\/)/, (match) => match + '/')
+      
+      // スキームがない場合、https://を追加
+      if (!url.match(/^https?:\/\//)) {
+        url = 'https://' + url
+      }
+      
+      processedData.website = url
+    }
+    
+    onSubmit(processedData)
   }
 
   return (
@@ -113,6 +130,21 @@ const CustomerForm = ({ onSubmit, onCancel, initialData = null }) => {
         />
       </div>
 
+      {/* Webサイト */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Webサイト
+        </label>
+        <input
+          type="url"
+          name="website"
+          value={formData.website}
+          onChange={handleChange}
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="https://example.com"
+        />
+      </div>
+
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -138,6 +170,20 @@ const CustomerForm = ({ onSubmit, onCancel, initialData = null }) => {
             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
+      </div>
+
+      {/* FAX */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          FAX
+        </label>
+        <input
+          type="tel"
+          name="fax"
+          value={formData.fax}
+          onChange={handleChange}
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
       </div>
 
       {/* 住所 */}

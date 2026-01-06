@@ -3,6 +3,7 @@ import { NavLink, useLocation } from "react-router-dom"
 
 const Sidebar = () => {
     const [isOpen, setIsOpen] = useState(false)
+    const [isExpenseOpen, setIsExpenseOpen] = useState(false)
     const location = useLocation()
 
     const menuItems = [
@@ -11,6 +12,20 @@ const Sidebar = () => {
         { id: 3, name: '/customers', label: '顧客管理', icon: '👥' },
         { id: 4, name: '/schedule', label: 'スケジュール', icon: '📅' }
     ]
+
+    const expenseMenuItems = [
+        { id: 'e1', name: '/expenses/dashboard', label: 'ダッシュボード', icon: '📊' },
+        { id: 'e2', name: '/expenses', label: '支出一覧', icon: '💰' },
+        { id: 'e3', name: '/expenses/recurring', label: '固定費', icon: '🔄' },
+        { id: 'e4', name: '/expenses/settings', label: '設定', icon: '⚙️' },
+    ]
+
+    // 支出管理ページにいる場合は自動で開く
+    useEffect(() => {
+        if (location.pathname.startsWith('/expenses')) {
+            setIsExpenseOpen(true)
+        }
+    }, [location.pathname])
 
     // ページ遷移時にメニューを閉じる
     useEffect(() => {
@@ -96,6 +111,51 @@ const Sidebar = () => {
                             <span>{item.label}</span>
                         </NavLink>
                     ))}
+
+                    {/* 支出管理（折りたたみメニュー） */}
+                    <div className="pt-2">
+                        <button
+                            onClick={() => setIsExpenseOpen(!isExpenseOpen)}
+                            className={`w-full flex items-center justify-between px-3 py-3 lg:py-2 rounded-lg transition-colors ${
+                                location.pathname.startsWith('/expenses')
+                                    ? 'bg-blue-600 text-white'
+                                    : 'hover:bg-gray-700 active:bg-gray-600'
+                            }`}
+                        >
+                            <div className="flex items-center gap-3">
+                                <span className="text-lg">💸</span>
+                                <span>支出管理</span>
+                            </div>
+                            <span className={`transition-transform duration-200 ${isExpenseOpen ? 'rotate-180' : ''}`}>
+                                ▼
+                            </span>
+                        </button>
+                        
+                        {/* サブメニュー */}
+                        <div className={`overflow-hidden transition-all duration-200 ${
+                            isExpenseOpen ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'
+                        }`}>
+                            <div className="pl-4 mt-1 space-y-1">
+                                {expenseMenuItems.map((item) => (
+                                    <NavLink
+                                        key={item.id}
+                                        to={item.name}
+                                        end={item.name === '/expenses'}
+                                        className={({ isActive }) =>
+                                            `flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
+                                                isActive
+                                                    ? 'bg-gray-700 text-white'
+                                                    : 'text-gray-300 hover:bg-gray-700 hover:text-white active:bg-gray-600'
+                                            }`
+                                        }
+                                    >
+                                        <span>{item.icon}</span>
+                                        <span>{item.label}</span>
+                                    </NavLink>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
                 </nav>
             </aside>
         </>

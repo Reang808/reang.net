@@ -4,7 +4,11 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend
 } from 'recharts'
 import { getMonthlyStats, getYearlyStats, getOverdueTasks, getDailyData } from '../src/api/dashboard'
-import { updateTask } from '../src/api/tasks'
+import { updateTask, deleteTask } from '../src/api/tasks'
+import { updateSchedule, deleteSchedule } from '../src/api/schedules'
+import Modal from '../components/common/Modal'
+import ScheduleForm from '../components/schedule/ScheduleForm'
+import TaskForm from '../components/tasks/TaskForm'
 
 const Dashboard = () => {
   const today = new Date()
@@ -28,6 +32,12 @@ const Dashboard = () => {
   const [overdueTasks, setOverdueTasks] = useState([])
   
   const [loading, setLoading] = useState(true)
+
+  // モーダル用のstate
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false)
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false)
+  const [selectedSchedule, setSelectedSchedule] = useState(null)
+  const [selectedTask, setSelectedTask] = useState(null)
 
   useEffect(() => {
     fetchAllData()
@@ -93,11 +103,81 @@ const Dashboard = () => {
     }
   }
 
-  // タスク完了処理
-  const handleTaskComplete = async (task) => {
+  // タスク完了処理（チェックボックス用）
+  const handleTaskComplete = async (task, e) => {
+    // イベントの伝播を止めてクリックイベントが発火しないようにする
+    e.stopPropagation()
     try {
       const newStatus = task.status === 'done' ? 'todo' : 'done'
       await updateTask(task.id, { ...task, status: newStatus })
+      fetchDailyData()
+      fetchOverdueTasks()
+      fetchMonthlyStats()
+      fetchYearlyStats()
+    } catch (err) {
+      alert(err.message)
+    }
+  }
+
+  // スケジュールクリック時
+  const handleScheduleClick = (schedule) => {
+    setSelectedSchedule(schedule)
+    setIsScheduleModalOpen(true)
+  }
+
+  // タスククリック時
+  const handleTaskClick = (task) => {
+    setSelectedTask(task)
+    setIsTaskModalOpen(true)
+  }
+
+  // スケジュール更新
+  const handleScheduleUpdate = async (formData) => {
+    try {
+      await updateSchedule(selectedSchedule.id, formData)
+      setIsScheduleModalOpen(false)
+      setSelectedSchedule(null)
+      fetchDailyData()
+    } catch (err) {
+      alert(err.message)
+    }
+  }
+
+  // スケジュール削除
+  const handleScheduleDelete = async () => {
+    if (!window.confirm('このスケジュールを削除しますか？')) return
+    try {
+      await deleteSchedule(selectedSchedule.id)
+      setIsScheduleModalOpen(false)
+      setSelectedSchedule(null)
+      fetchDailyData()
+    } catch (err) {
+      alert(err.message)
+    }
+  }
+
+  // タスク更新
+  const handleTaskUpdate = async (formData) => {
+    try {
+      await updateTask(selectedTask.id, formData)
+      setIsTaskModalOpen(false)
+      setSelectedTask(null)
+      fetchDailyData()
+      fetchOverdueTasks()
+      fetchMonthlyStats()
+      fetchYearlyStats()
+    } catch (err) {
+      alert(err.message)
+    }
+  }
+
+  // タスク削除
+  const handleTaskDelete = async () => {
+    if (!window.confirm('このタスクを削除しますか？')) return
+    try {
+      await deleteTask(selectedTask.id)
+      setIsTaskModalOpen(false)
+      setSelectedTask(null)
       fetchDailyData()
       fetchOverdueTasks()
       fetchMonthlyStats()
@@ -226,7 +306,8 @@ const Dashboard = () => {
                   {dailyData.schedules.map((schedule) => (
                     <div
                       key={`s-${schedule.id}`}
-                      className="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 bg-blue-50 rounded-lg"
+                      onClick={() => handleScheduleClick(schedule)}
+                      className="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 bg-blue-50 rounded-lg cursor-pointer hover:bg-blue-100 transition-colors"
                     >
                       <div className="text-blue-600 mt-0.5 text-sm sm:text-base">📅</div>
                       <div className="flex-1 min-w-0">
@@ -258,14 +339,16 @@ const Dashboard = () => {
                   {dailyData.tasks.map((task) => (
                     <div
                       key={`t-${task.id}`}
-                      className={`flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg ${
-                        task.status === 'done' ? 'bg-gray-100' : 'bg-orange-50'
+                      onClick={() => handleTaskClick(task)}
+                      className={`flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg cursor-pointer transition-colors ${
+                        task.status === 'done' ? 'bg-gray-100 hover:bg-gray-200' : 'bg-orange-50 hover:bg-orange-100'
                       }`}
                     >
                       <input
                         type="checkbox"
                         checked={task.status === 'done'}
-                        onChange={() => handleTaskComplete(task)}
+                        onChange={(e) => handleTaskComplete(task, e)}
+                        onClick={(e) => e.stopPropagation()}
                         className="w-5 h-5 rounded border-gray-300 text-green-600 cursor-pointer flex-shrink-0"
                       />
                       <div className="flex-1 min-w-0">
@@ -303,12 +386,14 @@ const Dashboard = () => {
                 {overdueTasks.map((task) => (
                   <div
                     key={task.id}
-                    className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-red-50 border border-red-200 rounded-lg"
+                    onClick={() => handleTaskClick(task)}
+                    className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-red-50 border border-red-200 rounded-lg cursor-pointer hover:bg-red-100 transition-colors"
                   >
                     <input
                       type="checkbox"
                       checked={task.status === 'done'}
-                      onChange={() => handleTaskComplete(task)}
+                      onChange={(e) => handleTaskComplete(task, e)}
+                      onClick={(e) => e.stopPropagation()}
                       className="w-5 h-5 rounded border-gray-300 text-green-600 cursor-pointer flex-shrink-0"
                     />
                     <div className="flex-1 min-w-0">
@@ -474,7 +559,51 @@ const Dashboard = () => {
         </div>
       </div>
 
-      
+      {/* スケジュール編集モーダル */}
+      <Modal
+        isOpen={isScheduleModalOpen}
+        onClose={() => {
+          setIsScheduleModalOpen(false)
+          setSelectedSchedule(null)
+        }}
+        title="スケジュール編集"
+      >
+        {selectedSchedule && (
+          <ScheduleForm
+            initialData={selectedSchedule}
+            isEdit={true}
+            onSubmit={handleScheduleUpdate}
+            onCancel={() => {
+              setIsScheduleModalOpen(false)
+              setSelectedSchedule(null)
+            }}
+            onDelete={handleScheduleDelete}
+          />
+        )}
+      </Modal>
+
+      {/* タスク編集モーダル */}
+      <Modal
+        isOpen={isTaskModalOpen}
+        onClose={() => {
+          setIsTaskModalOpen(false)
+          setSelectedTask(null)
+        }}
+        title="タスク編集"
+      >
+        {selectedTask && (
+          <TaskForm
+            initialData={selectedTask}
+            isEdit={true}
+            onSubmit={handleTaskUpdate}
+            onCancel={() => {
+              setIsTaskModalOpen(false)
+              setSelectedTask(null)
+            }}
+            onDelete={handleTaskDelete}
+          />
+        )}
+      </Modal>
     </div>
   )
 }
